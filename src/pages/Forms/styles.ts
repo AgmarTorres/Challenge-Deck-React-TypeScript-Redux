@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-
+import { shade } from 'polished';
 export const Container = styled.div`
   display: grid;
   grid-auto-rows: 1fr auto;
@@ -33,6 +33,7 @@ export const Rotate = styled.div`
   font-size: 15px;
 `
 
+
 export const Data = styled.div`
   margin-top: 10vh;
   display: flex;
@@ -46,12 +47,24 @@ export const Button = styled.button`
   padding: 0.25em 1em;
   border: 2px solid #ff9000;
   border-radius: 10vw;
+  &:hover {
+    background:  ${shade(0.2, '#ff7000')};
+    border:  2px solid ${shade(0.2, '#ff7000')};
+  }
 `;
 
-export const Input = styled.input`
+export const Input = styled.input.attrs(props => ({
+  type: 'text',
+  maxLength: '2',
+}))`
+  width: 100px;
   padding: 0.5em;
   margin: 0.5em;
   background: #f4ede8;
   border: none;
   border-radius: 3px;
-  `
+`
+
+export const Line = styled.div`
+  border: 1px solid #ff9000;
+`
