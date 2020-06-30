@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import {Container, Main, Header, Rotate, Input,  Row, Data, Button } from './styles'
 import Cart  from '../../components/Cart'
 
-
 interface ICart {
   num: string
   nap: string

@@ -22,6 +22,7 @@ export const Row = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
+  margin: 50px;
 `
 
 export const Rotate = styled.div`
@@ -67,4 +68,10 @@ export const Input = styled.input.attrs(props => ({
 
 export const Line = styled.div`
   border: 1px solid #ff9000;
+`
+
+export const Deck = styled.div`
+  color: #ff9000;
+  text-align:center;
+  font-size: 35px;
 `
