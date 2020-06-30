@@ -1,6 +1,8 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 import api from '../../services/api'
 import Input from '../../components/Input'
+import { useHistory } from 'react-router-dom'
+
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web'
 import {Container, Main, Header, Rotate,  Row, Data, Button, Line, Deck } from './styles'
@@ -29,9 +31,11 @@ interface FormData {
 }
 
 const Forms: React.FC = () =>{
+  const history = useHistory();
 
   const formRef = useRef<FormHandles>(null);
   const [ deck, setDeck] = useState<IDeck>()
+
   useEffect(()=>{
     function getDeck (){
       api.get('/deck/new').then( response =>{
@@ -42,61 +46,62 @@ const Forms: React.FC = () =>{
   },[])
 
   const handleValidate = useCallback(async ( data: string) => {
-
-    if(
-      (String((data[0].toUpperCase())) === ( '2'  || 'A' || 'K' ||  'Q' || 'J' || '10' ||  '9' || '8' || '7' || '6' || '5' || '4' || '3'))
-      &&
-      (String((data[1].toUpperCase())) === ('C' ||  'D' || 'H' || 'S' ))
-    ){
-      return data.toUpperCase() +','
-    }else{
+    if(data.length < 2){
       return ''
     }
+
+    const number = ['2'  , 'A' , 'K' ,  'Q' , 'J' , '10' ,  '9' , '8' , '7' , '6' , '5' , '4' , '3']
+    const naipe = ['C' ,  'D' , 'H' , 'S' ]
+
+    var validNumber = number.filter(value => value === data[0].toUpperCase())
+    var validNaipe = naipe.filter(value => value === data[1].toUpperCase())
+
+    if( validNumber.length === 1 && validNaipe.length === 1 ){
+      return data.toUpperCase().trim() +','
+    }else{
+      alert('A Carta '+ data + ' não faz parte do jogo!')
+      return ''
+    }
+
   },[])
 
 
   const handleSubmit = useCallback(async (data: FormData) => {
+    let link= ''
+    let rotation = ''
     try {
-      formRef.current?.setErrors({});
-      const cart0 = await handleValidate( data.cart0)
-      cart0 ? console.log(true): console.log(false)
-      const cart1 = await handleValidate( data.cart1)
-      const cart2 = await handleValidate( data.cart2)
-      const cart3 = await handleValidate( data.cart3)
-      const cart4 = await handleValidate( data.cart4)
-      const cart5 = await handleValidate( data.cart5)
-      const cart6 = await handleValidate( data.cart6)
-      const cart7 = await handleValidate( data.cart7)
-      const cart8 = await handleValidate( data.cart8)
-      const cart9 = await handleValidate( data.cart9)
-      const cart10 = await handleValidate( data.cart10)
+      rotation += await handleValidate(data.cart0)
+      if(rotation.length > 0 ){
+        link += await handleValidate(data.cart1)
+        link += await handleValidate(data.cart2)
+        link += await handleValidate(data.cart3)
+        link += await handleValidate(data.cart4)
+        link += await handleValidate(data.cart5)
+        link += await handleValidate(data.cart6)
+        link += await handleValidate(data.cart7)
+        link += await handleValidate(data.cart8)
+        link += await handleValidate(data.cart9)
+        link += await handleValidate(data.cart10)
 
-      if( cart0 || cart1 || cart2 ||
-        cart3 || cart4 || cart5 ||
-        cart6 || cart7 || cart8 ||
-        cart9 || cart10
-      ){
-        let link =''
-        link=cart10 + cart0 + cart1 + cart2 + cart3 + cart4 + cart5+ cart6+ cart7+ cart8+ cart9
-        console.log(link)
-        const partial = await api.get('/new/?cards=AS,2S,KS,AD,2D,KD,AC,2C,KC,AH,2H')
-
-        await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id+'/draw/?count=1')
-
-        const drawR = await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id+'/pile/rotation/add/?cards='+ String(data.cart10))
-
-        await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id+'/draw/?count=10')
-
-        const drawA = await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id+'/pile/cards/add/?cards=2S,KS,AD,2D,KD,AC,2C,KC,AH,2H')
-
+        console.log('/new/?cards='+rotation+link)
+        const partial = await api.get('/new/?cards='+rotation+link)
+        console.log('partial', partial)
+        await api.get('/'+ partial.data.deck_id+'/draw/?count=1')
+        const drawR = await api.get('/'+ partial.data.deck_id+'/pile/rotation/add/?cards='+ String(rotation))
+        console.log('drawR', drawR)
+        await api.get('/'+ partial.data.deck_id+'/draw/?count=10')
+        const drawA = await api.get('/'+ partial.data.deck_id+'/pile/cards/add/?cards='+link)
+        console.log('drawA', drawA)
+        const ListRotation = await api.get('/'+ partial.data.deck_id+'/pile/rotation/list')
+        console.log('list', ListRotation)
       }
       else{
-        console.log('error')
+        alert('A carta de rotação é obrigatória')
       }
     }
     catch (err) {
     }
-    }, [handleValidate]);
+  }, [handleValidate]);
 
 
   return(
@@ -106,22 +111,22 @@ const Forms: React.FC = () =>{
     <Form ref={formRef} onSubmit={handleSubmit}>
       <Deck> Deck: {deck} </Deck>
       <Row>
-        <Input name="cart0" type="text"  ></Input>
         <Input name="cart1" type="text"  ></Input>
         <Input name="cart2" type="text"  ></Input>
         <Input name="cart3" type="text"  ></Input>
         <Input name="cart4" type="text"  ></Input>
+        <Input name="cart5" type="text" ></Input>
        </Row>
       <Row>
-        <Input name="cart5" type="text" ></Input>
         <Input name="cart6" type="text" ></Input>
         <Input name="cart7" type="text" ></Input>
         <Input name="cart8" type="text" ></Input>
         <Input name="cart9" type="text" ></Input>
+        <Input name="cart10" type="text"  ></Input>
       </Row>
       <Rotate>
         <h1>Carta de Rotação</h1>
-        <Input name="cart10" type="text"></Input>
+        <Input name="cart0" type="text"></Input>
       </Rotate>
       <Data>
         <Button type="submit"> Adicionar </Button>
