@@ -38,9 +38,7 @@ const Forms: React.FC = () =>{
 
   useEffect(()=>{
     function getDeck (){
-      api.get('/deck/new').then( response =>{
-        setDeck( response.data.deck_id)
-      })
+
     }
     getDeck()
   },[])
@@ -83,17 +81,17 @@ const Forms: React.FC = () =>{
         link += await handleValidate(data.cart9)
         link += await handleValidate(data.cart10)
 
-        console.log('/new/?cards='+rotation+link)
-        const partial = await api.get('/new/?cards='+rotation+link)
-        console.log('partial', partial)
-        await api.get('/'+ partial.data.deck_id+'/draw/?count=1')
-        const drawR = await api.get('/'+ partial.data.deck_id+'/pile/rotation/add/?cards='+ String(rotation))
-        console.log('drawR', drawR)
-        await api.get('/'+ partial.data.deck_id+'/draw/?count=10')
-        const drawA = await api.get('/'+ partial.data.deck_id+'/pile/cards/add/?cards='+link)
-        console.log('drawA', drawA)
-        const ListRotation = await api.get('/'+ partial.data.deck_id+'/pile/rotation/list')
-        console.log('list', ListRotation)
+        const partial = await api.get('https://deckofcardsapi.com/api/deck/new/?cards='+rotation+link)
+        console.log( partial.data )
+        await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id+'/draw/?count=11')
+       // const drawR = await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id+'/pile/rota/add/?cards='+ rotation)
+
+        const drawA = await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id +'/pile/cards/add/?cards='+ rotation + link)
+        console.log( drawA.data)
+       // const listRotation = await api.get('https://deckofcardsapi.com/api/deck/'+ drawA.data.deck_id +'/pile/rota/list/')
+        //console.log( listRotation)
+        const listCards = await api.get('https://deckofcardsapi.com/api/deck/'+ drawA.data.deck_id +'/pile/cards/list/')
+        console.log(listCards.data.piles.cards.cards)
       }
       else{
         alert('A carta de rotação é obrigatória')
