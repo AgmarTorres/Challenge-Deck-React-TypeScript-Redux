@@ -23,9 +23,13 @@ const Deck: React.FC = () =>{
   let newNaipes: Array<String>=[]
   if(carts.length){
     const indexValue = values.indexOf(rotation[0])
-    values.map( (cart, index) =>{ if(indexValue <= index){
-      newValues.push(String(cart))
-    } })
+    values.map( (cart, index) =>
+      {
+        if(indexValue <= index){
+          newValues.push(String(cart))
+        }
+      }
+    )
     values.map( (cart, index) =>{ if(indexValue > index){
         newValues.push(String(cart))
         }
