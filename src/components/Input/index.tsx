@@ -47,7 +47,7 @@ const Input: React.FC<InputProps> = ({ name, containerStyle = {},  ...rest }) =>
         onBlur={handleInputBlur}
         defaultValue={defaultValue}
         ref={inputRef}
-        maxLength={2}
+        maxLength={3}
         {...rest}
 
       />

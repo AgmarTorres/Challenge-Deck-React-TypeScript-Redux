@@ -1,19 +1,17 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
-import api from '../../services/api'
-import Input from '../../components/Input'
 import { useHistory } from 'react-router-dom'
-
+import { useDispatch } from 'react-redux'
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web'
 import {Container, Main, Header, Rotate,  Row, Data, Button, Line, Deck } from './styles'
 
+import api from '../../services/api'
+import Input from '../../components/Input'
+
+import {addPileAction} from '../../store/deck/action'
+import {ICart} from '../../store/deck/types'
 interface IDeck{
   name: string
-}
-
-interface ICart {
-  num:  'A'|'2'| '3'| '4'| '5'| '6'| '7'| '8'| '9'|'0'|'J'|'Q'|'K'
-  nap: 'S' | 'D' | 'C' | 'H'
 }
 
 interface FormData {
@@ -34,7 +32,8 @@ const Forms: React.FC = () =>{
   const history = useHistory();
 
   const formRef = useRef<FormHandles>(null);
-  const [ deck, setDeck] = useState<IDeck>()
+  const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch()
 
   useEffect(()=>{
     function getDeck (){
@@ -44,12 +43,21 @@ const Forms: React.FC = () =>{
   },[])
 
   const handleValidate = useCallback(async ( data: string) => {
-    if(data.length < 2){
+    if( data.length <2){
       return ''
     }
 
     const number = ['2'  , 'A' , 'K' ,  'Q' , 'J' , '10' ,  '9' , '8' , '7' , '6' , '5' , '4' , '3']
     const naipe = ['C' ,  'D' , 'H' , 'S' ]
+
+    //Validando o 10
+    if( data[0]==='1' && data[1]==='0' ){
+      var validNaipe = naipe.filter(value => value === data[2].toUpperCase())
+      if(validNaipe.length === 1){
+        return data.toUpperCase().trim() +','
+      }
+      return 'ERROR'
+    }
 
     var validNumber = number.filter(value => value === data[0].toUpperCase())
     var validNaipe = naipe.filter(value => value === data[1].toUpperCase())
@@ -65,6 +73,7 @@ const Forms: React.FC = () =>{
 
 
   const handleSubmit = useCallback(async (data: FormData) => {
+    setLoading(true)
     let link= ''
     let rotation = ''
     try {
@@ -81,25 +90,28 @@ const Forms: React.FC = () =>{
         link += await handleValidate(data.cart9)
         link += await handleValidate(data.cart10)
 
-        const partial = await api.get('https://deckofcardsapi.com/api/deck/new/?cards='+rotation+link)
-        console.log( partial.data )
-        await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id+'/draw/?count=11')
-       // const drawR = await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id+'/pile/rota/add/?cards='+ rotation)
-
-        const drawA = await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id +'/pile/cards/add/?cards='+ rotation + link)
-        console.log( drawA.data)
-       // const listRotation = await api.get('https://deckofcardsapi.com/api/deck/'+ drawA.data.deck_id +'/pile/rota/list/')
-        //console.log( listRotation)
-        const listCards = await api.get('https://deckofcardsapi.com/api/deck/'+ drawA.data.deck_id +'/pile/cards/list/')
-        console.log(listCards.data.piles.cards.cards)
+        if( link.includes('ERROR')){
+          link = ''
+          setLoading(false)
+        }else{
+          const partial = await api.get('https://deckofcardsapi.com/api/deck/new/?cards='+rotation+link)
+          await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id+'/draw/?count=11')
+          const drawA = await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id +'/pile/cards/add/?cards='+ rotation + link)
+          const response = await api.get('https://deckofcardsapi.com/api/deck/'+ drawA.data.deck_id +'/pile/cards/list/')
+          const listCards: ICart[] = response.data.piles.cards.cards
+          dispatch(addPileAction(listCards, rotation))
+          setLoading(false)
+          history.push('/deck/'+drawA.data.deck_id )
+        }
       }
       else{
+        setLoading(false)
         alert('A carta de rotação é obrigatória')
       }
     }
     catch (err) {
     }
-  }, [handleValidate]);
+  }, [handleValidate, dispatch, history]);
 
 
   return(
@@ -107,7 +119,7 @@ const Forms: React.FC = () =>{
     <Header>Full Houses</Header>
     <Main>
     <Form ref={formRef} onSubmit={handleSubmit}>
-      <Deck> Deck: {deck} </Deck>
+      <Deck> Deck </Deck>
       <Row>
         <Input name="cart1" type="text"  ></Input>
         <Input name="cart2" type="text"  ></Input>
@@ -127,7 +139,7 @@ const Forms: React.FC = () =>{
         <Input name="cart0" type="text"></Input>
       </Rotate>
       <Data>
-        <Button type="submit"> Adicionar </Button>
+        <Button type="submit">{ loading? 'Loading ': 'Adicionar' }  </Button>
       </Data>
     </Form>
     <Line/>
