@@ -91,7 +91,6 @@ const Forms: React.FC = () =>{
         link += await handleValidate(data.cart8)
         link += await handleValidate(data.cart9)
         link += await handleValidate(data.cart10)
-
         if( link.includes('ERROR')){
           link = ''
           setLoading(false)

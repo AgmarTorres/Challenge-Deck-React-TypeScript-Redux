@@ -39,6 +39,7 @@ export const Rotate = styled.div`
 
 export const Data = styled.div`
   margin-top: 10vh;
+  font-size: 30px;
   color: #ff9000;
 `
 
@@ -57,4 +58,7 @@ export const Input = styled.input`
   background: #f4ede8;
   border: none;
   border-radius: 3px;
-  `
+`
+export const Li = styled.li`
+  list-style-type: none;
+`

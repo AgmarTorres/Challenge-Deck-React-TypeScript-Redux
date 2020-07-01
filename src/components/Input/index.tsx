@@ -48,8 +48,8 @@ const Input: React.FC<InputProps> = ({ name, containerStyle = {},  ...rest }) =>
         defaultValue={defaultValue}
         ref={inputRef}
         maxLength={3}
+        placeholder="Card"
         {...rest}
-
       />
     </Container>
   );

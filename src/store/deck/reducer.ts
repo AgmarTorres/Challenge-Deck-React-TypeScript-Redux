@@ -26,7 +26,6 @@ function Decks( state = INITIAL_STATE, action: IAction) {
       case PILE_SUCCESS:
         return { ...state, carts : [ ...state.carts, ...action.data ], rotation: action.rotation}
 
-
       default:
         return state
   }
