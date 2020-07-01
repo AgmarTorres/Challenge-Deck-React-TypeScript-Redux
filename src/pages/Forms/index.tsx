@@ -8,7 +8,7 @@ import {Container, Main, Header, Rotate,  Row, Data, Button, Line, Deck } from '
 import api from '../../services/api'
 import Input from '../../components/Input'
 
-import {addPileAction} from '../../store/deck/action'
+import {addPileAction, cleanPileAction} from '../../store/deck/action'
 import {ICart} from '../../store/deck/types'
 interface IDeck{
   name: string
@@ -36,11 +36,11 @@ const Forms: React.FC = () =>{
   const dispatch = useDispatch()
 
   useEffect(()=>{
-    function getDeck (){
-
+    function cleanDeck (){
+      dispatch(cleanPileAction())
     }
-    getDeck()
-  },[])
+    cleanDeck()
+  },[dispatch])
 
   const handleValidate = useCallback(async ( data: string) => {
     if( data.length <2){
@@ -49,10 +49,11 @@ const Forms: React.FC = () =>{
 
     const number = ['2'  , 'A' , 'K' ,  'Q' , 'J' , '10' ,  '9' , '8' , '7' , '6' , '5' , '4' , '3']
     const naipe = ['C' ,  'D' , 'H' , 'S' ]
-
+    var validNaipe
     //Validando o 10
     if( data[0]==='1' && data[1]==='0' ){
-      var validNaipe = naipe.filter(value => value === data[2].toUpperCase())
+      validNaipe = naipe.filter(value => value === data[2].toUpperCase())
+
       if(validNaipe.length === 1){
         return data.toUpperCase().trim() +','
       }
@@ -60,7 +61,7 @@ const Forms: React.FC = () =>{
     }
 
     var validNumber = number.filter(value => value === data[0].toUpperCase())
-    var validNaipe = naipe.filter(value => value === data[1].toUpperCase())
+    validNaipe = naipe.filter(value => value === data[1].toUpperCase())
 
     if( validNumber.length === 1 && validNaipe.length === 1 ){
       return data.toUpperCase().trim() +','
@@ -78,6 +79,7 @@ const Forms: React.FC = () =>{
     let rotation = ''
     try {
       rotation += await handleValidate(data.cart0)
+      rotation = rotation.replace(",", "");
       if(rotation.length > 0 ){
         link += await handleValidate(data.cart1)
         link += await handleValidate(data.cart2)
@@ -96,7 +98,7 @@ const Forms: React.FC = () =>{
         }else{
           const partial = await api.get('https://deckofcardsapi.com/api/deck/new/?cards='+rotation+link)
           await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id+'/draw/?count=11')
-          const drawA = await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id +'/pile/cards/add/?cards='+ rotation + link)
+          const drawA = await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id +'/pile/cards/add/?cards='+ link)
           const response = await api.get('https://deckofcardsapi.com/api/deck/'+ drawA.data.deck_id +'/pile/cards/list/')
           const listCards: ICart[] = response.data.piles.cards.cards
           dispatch(addPileAction(listCards, rotation))

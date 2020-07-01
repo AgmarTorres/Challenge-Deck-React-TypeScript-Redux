@@ -1,10 +1,8 @@
-import React,{ useState } from 'react'
+import React from 'react'
 import { useSelector} from 'react-redux'
 import {Container, Main, Header, Rotate, Row, Data } from './styles'
 import { ICart } from '../../store/deck/types'
 import Cart  from '../../components/Cart'
-
-
 
 interface ApplicationState{
   loading: boolean;
@@ -13,40 +11,57 @@ interface ApplicationState{
 }
 
 const Deck: React.FC = () =>{
-  const [bigValue, setBigValue] = useState('')
   const carts = useSelector( (state:ApplicationState) => state.carts )
   const rotation = useSelector( (state:ApplicationState) => state.rotation )
-
   const naipes =['H', 'D', 'C', 'S']
   const values = ['2', 'A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3']
   let newValues: Array<String> = []
+  let list: Array<String> = []
   let newNaipes: Array<String>=[]
   if(carts.length){
-    const indexValue = values.indexOf(rotation[0])
-    values.map( (cart, index) =>
-      {
-        if(indexValue <= index){
-          newValues.push(String(cart))
-        }
-      }
-    )
-    values.map( (cart, index) =>{ if(indexValue > index){
+    const indexValue = values.findIndex(value => value[0] === rotation[0])
+    values.forEach( (cart, index) =>{
+      if(indexValue <= index){
         newValues.push(String(cart))
-        }
       }
-  )
+    })
 
-  const indexNaipe = naipes.indexOf(rotation[1])
-    naipes.map( (cart, index) =>{ if(indexNaipe <= index){
-      newNaipes.push(String(cart))
-    } })
-    naipes.map( (cart, index) =>{ if(indexNaipe > index){
-        newNaipes.push(String(cart))
-        }
+    values.forEach( (cart, index) =>{
+      if(indexValue > index){
+        newValues.push(String(cart))
       }
-    )
+    })
+    let indexNaipe = 0
+    rotation.length === 3 ?
+      indexNaipe = naipes.findIndex(naipe=> naipe ===rotation[2])
+      :
+      indexNaipe = naipes.findIndex(naipe=> naipe ===rotation[1])
+
+
+    naipes.forEach( (cart, index) =>{
+      if(indexNaipe <= index){
+        newNaipes.push(String(cart))
+      }
+    })
+
+    naipes.forEach( (cart, index) =>{
+        if(indexNaipe > index){
+            newNaipes.push(String(cart))
+        }
+      })
   }
-  console.log(newNaipes)
+
+  newNaipes.forEach(naipes =>{
+    newValues.forEach(value =>{
+      let obj = String(value) + naipes
+      carts.forEach( cart => {
+        if(cart.code === obj){
+          list.push(obj)
+        }
+      })
+    })
+  })
+
   return(
    <Container>
     <Header>Deck</Header>
@@ -54,17 +69,18 @@ const Deck: React.FC = () =>{
       <Row>
       {
         carts.map( (cart, index) =>{
-         if(index === 0 || index > 5 ){}
+         if( index > 4 ){ return ''}
          else{
             if(cart.code.length === 3){
               return(
                 <Cart key={ index } number={cart.code[0]+cart.code[1]} naipe={ cart.code[2] } />
                )
-            }else{
-              return(
-                <Cart key={ index } number={cart.code[0]} naipe={cart.code[1]} />
-              )
             }
+            else{
+                return(
+                  <Cart key={ index } number={cart.code[0]} naipe={cart.code[1]} />
+                )
+              }
             }
           }
         )
@@ -73,7 +89,7 @@ const Deck: React.FC = () =>{
       <Row>
       {
         carts.map( (cart, index) =>{
-         if(index >= 6 ){
+         if(index >= 5 ){
             if(cart.code.length === 3){
               return(
                 <Cart key={ index } number={cart.code[0]+cart.code[1]} naipe={ cart.code[2] } />
@@ -84,6 +100,7 @@ const Deck: React.FC = () =>{
               )
             }
             }
+          return ''
           }
         )
       }
@@ -100,8 +117,16 @@ const Deck: React.FC = () =>{
         }
         </Rotate>
       <Data>
-        <span>Maior Cart: </span><br/>
-        <span>Maior Cart:</span>
+        <span>Maior Cart: {list[0]}. </span><br/>
+        <span>Lista ordenada:
+          {
+            list.map( (value,index) =>
+              index === list.length -1 ?
+              <span key={index}> { value }. </span> :
+              <span key={ index}> { value }, </span>
+            )
+          }
+        </span>
       </Data>
     </Main>
   </Container>
