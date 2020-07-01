@@ -25,18 +25,21 @@ export const Row = styled.div`
 `
 
 export const Rotate = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  height: 400px;
+  width: 100%;
   color: #ff9000;
-  font-size: 15px;
+  display: flex;
+  font-size: 20px;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+  align-items: center;
 `
 
 export const Data = styled.div`
   margin-top: 10vh;
-  display: flex;
-  justify-content: center;
+  color: #ff9000;
 `
 
 export const Button = styled.button`
