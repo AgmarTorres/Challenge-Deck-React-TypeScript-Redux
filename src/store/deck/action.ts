@@ -1,11 +1,11 @@
-import {ICart, PILE_LOADING,  PILE_SUCCESS, PILE_ERROR } from './types'
+import {ICard, PILE_LOADING,  PILE_SUCCESS, PILE_ERROR } from './types'
 
-export function addPileAction( data: ICart[], rotation: string ){
+export function addPileAction( data: ICard[], rotation: string ){
   return { type: PILE_SUCCESS , data, rotation }
 }
 
 export function cleanPileAction(){
-  const data:ICart[] = []
+  const data:ICard[] = []
   const rotation= ''
   return { type: PILE_LOADING , data, rotation }
 }

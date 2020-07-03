@@ -1,20 +1,16 @@
 import React from 'react'
 import { useSelector} from 'react-redux'
 import {Container, Main, Header, Rotate, Row, Data, Li } from './styles'
-import { ICart } from '../../store/deck/types'
-import Cart  from '../../components/Cart'
+import { ICard } from '../../store/deck/types'
+import Card  from '../../components/Card'
 
 interface ApplicationState{
   loading: boolean;
-  carts: ICart[]
+  cards: ICard[]
   rotation: string
 }
 
-interface IFullHouse{
-  value: string
-}
-
-function handleTriple(list: ICart[]){
+function handleTriple(list: ICard[]){
   var group:Array<String> = []
   if( list.length < 5){ return group}
 
@@ -34,7 +30,7 @@ function handleTriple(list: ICart[]){
   return group
 }
 
-function handleDouble(list: ICart[]){
+function handleDouble(list: ICard[]){
   var group:Array<String> = []
 
   list.forEach( (value, index) => {
@@ -52,19 +48,19 @@ function handleDouble(list: ICart[]){
 }
 
 const Deck: React.FC = () =>{
-  const carts = useSelector( (state:ApplicationState) => state.carts )
+  const cards = useSelector( (state:ApplicationState) => state.cards )
   const rotation = useSelector( (state:ApplicationState) => state.rotation )
-  const listTriple = handleTriple(carts)
+  const listTriple = handleTriple(cards)
   var listDouble: Array<String> = []
   if(listTriple.length){
-    listDouble = handleDouble(carts)
+    listDouble = handleDouble(cards)
   }
   const naipes =['H', 'D', 'C', 'S']
   const values = ['2', 'A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3']
   let newValues: Array<String> = []
   let list: Array<String> = []
   let newNaipes: Array<String>=[]
-  if(carts.length){
+  if(cards.length){
     const indexValue = values.findIndex(value => value[0] === rotation[0])
     values.forEach( (cart, index) =>{
       if(indexValue <= index){
@@ -99,8 +95,8 @@ const Deck: React.FC = () =>{
   newNaipes.forEach(naipes =>{
     newValues.forEach(value =>{
       let obj = String(value) + naipes
-      carts.forEach( cart => {
-        if(cart.code === obj){
+      cards.forEach( card => {
+        if(card.code === obj){
           list.push(obj)
         }
       })
@@ -119,12 +115,12 @@ const Deck: React.FC = () =>{
          else{
             if(cart.length === 3){
               return(
-                <Cart key={ index } number={cart[0]+cart[1]} naipe={ cart[2] } />
+                <Card key={ index } number={cart[0]+cart[1]} naipe={ cart[2] } />
                )
             }
             else{
                 return(
-                  <Cart key={ index } number={cart[0]} naipe={cart[1]} />
+                  <Card key={ index } number={cart[0]} naipe={cart[1]} />
                 )
               }
             }
@@ -138,11 +134,11 @@ const Deck: React.FC = () =>{
          if(index >= 5 ){
             if(cart.length === 3){
               return(
-                <Cart key={ index } number={cart[0] + cart[1]} naipe={ cart[2] } />
+                <Card key={ index } number={cart[0] + cart[1]} naipe={ cart[2] } />
               )
             }else{
               return(
-                <Cart key={ index } number={cart[0]} naipe={cart[1]} />
+                <Card key={ index } number={cart[0]} naipe={cart[1]} />
               )
             }
             }
@@ -156,9 +152,9 @@ const Deck: React.FC = () =>{
         {
           rotation.length > 0 ?
             rotation.length ===3 ?
-            <Cart number={rotation[0]+rotation[1]} naipe={rotation[2]} ></Cart>
+            <Card number={rotation[0]+rotation[1]} naipe={rotation[2]} ></Card>
             :
-            <Cart number={rotation[0]} naipe={rotation[1]} ></Cart>
+            <Card number={rotation[0]} naipe={rotation[1]} ></Card>
           : ''
         }
         </Rotate>

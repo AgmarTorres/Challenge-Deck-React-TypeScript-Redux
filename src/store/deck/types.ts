@@ -1,4 +1,4 @@
-export interface ICart{
+export interface ICard{
   code: string
   image: string
   images:{

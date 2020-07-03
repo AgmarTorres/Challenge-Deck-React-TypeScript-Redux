@@ -6,7 +6,7 @@ interface ICard{
   naipe: string
 }
 
-const Cart: React.FC<ICard> = ({number, naipe}) =>{
+const Card: React.FC<ICard> = ({number, naipe}) =>{
     var color = false
     if(naipe === 'H' || naipe === 'D'){
       color = true
@@ -41,4 +41,4 @@ const Cart: React.FC<ICard> = ({number, naipe}) =>{
     )
 }
 
-export default Cart
+export default Card

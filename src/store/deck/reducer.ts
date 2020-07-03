@@ -1,4 +1,4 @@
-import { ICart, PILE_LOADING, PILE_SUCCESS} from './types'
+import { ICard, PILE_LOADING, PILE_SUCCESS} from './types'
 
 interface IAction{
   type: string
@@ -8,23 +8,23 @@ interface IAction{
 
 interface ApplicationState{
   loading: boolean;
-  carts: ICart[]
+  cards: ICard[]
   rotation: string
 }
 
 const INITIAL_STATE: ApplicationState = {
   loading: false,
-  carts: [],
+  cards: [],
   rotation: ''
 }
 
 function Decks( state = INITIAL_STATE, action: IAction) {
   switch( action.type){
       case PILE_LOADING:
-      return { carts : [ ], rotation: '', loading: false}
+      return { cards : [ ], rotation: '', loading: false}
 
       case PILE_SUCCESS:
-        return { ...state, carts : [ ...state.carts, ...action.data ], rotation: action.rotation}
+        return { ...state, cards : [ ...state.cards, ...action.data ], rotation: action.rotation}
 
       default:
         return state

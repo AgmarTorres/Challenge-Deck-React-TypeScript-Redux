@@ -9,23 +9,23 @@ import api from '../../services/api'
 import Input from '../../components/Input'
 
 import {addPileAction, cleanPileAction} from '../../store/deck/action'
-import {ICart} from '../../store/deck/types'
+import {ICard} from '../../store/deck/types'
 interface IDeck{
   name: string
 }
 
 interface FormData {
-  cart0: string;
-  cart1: string;
-  cart2: string;
-  cart3: string;
-  cart4: string;
-  cart5: string;
-  cart6: string;
-  cart7: string;
-  cart8: string;
-  cart9: string;
-  cart10: string;
+  card0: string;
+  card1: string;
+  card2: string;
+  card3: string;
+  card4: string;
+  card5: string;
+  card6: string;
+  card7: string;
+  card8: string;
+  card9: string;
+  card10: string;
 }
 
 const Forms: React.FC = () =>{
@@ -78,19 +78,19 @@ const Forms: React.FC = () =>{
     let link= ''
     let rotation = ''
     try {
-      rotation += await handleValidate(data.cart0)
+      rotation += await handleValidate(data.card0)
       rotation = rotation.replace(",", "");
       if(rotation.length > 0 ){
-        link += await handleValidate(data.cart1)
-        link += await handleValidate(data.cart2)
-        link += await handleValidate(data.cart3)
-        link += await handleValidate(data.cart4)
-        link += await handleValidate(data.cart5)
-        link += await handleValidate(data.cart6)
-        link += await handleValidate(data.cart7)
-        link += await handleValidate(data.cart8)
-        link += await handleValidate(data.cart9)
-        link += await handleValidate(data.cart10)
+        link += await handleValidate(data.card1)
+        link += await handleValidate(data.card2)
+        link += await handleValidate(data.card3)
+        link += await handleValidate(data.card4)
+        link += await handleValidate(data.card5)
+        link += await handleValidate(data.card6)
+        link += await handleValidate(data.card7)
+        link += await handleValidate(data.card8)
+        link += await handleValidate(data.card9)
+        link += await handleValidate(data.card10)
         if( link.includes('ERROR')){
           link = ''
           setLoading(false)
@@ -99,7 +99,7 @@ const Forms: React.FC = () =>{
           await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id+'/draw/?count=11')
           const drawA = await api.get('https://deckofcardsapi.com/api/deck/'+ partial.data.deck_id +'/pile/cards/add/?cards='+ link)
           const response = await api.get('https://deckofcardsapi.com/api/deck/'+ drawA.data.deck_id +'/pile/cards/list/')
-          const listCards: ICart[] = response.data.piles.cards.cards
+          const listCards: ICard[] = response.data.piles.cards.cards
           dispatch(addPileAction(listCards, rotation))
           setLoading(false)
           history.push('/deck/'+drawA.data.deck_id )
@@ -122,22 +122,22 @@ const Forms: React.FC = () =>{
     <Form ref={formRef} onSubmit={handleSubmit}>
       <Deck> Deck </Deck>
       <Row>
-        <Input name="cart1" type="text"  ></Input>
-        <Input name="cart2" type="text"  ></Input>
-        <Input name="cart3" type="text"  ></Input>
-        <Input name="cart4" type="text"  ></Input>
-        <Input name="cart5" type="text" ></Input>
+        <Input name="card1" type="text"  ></Input>
+        <Input name="card2" type="text"  ></Input>
+        <Input name="card3" type="text"  ></Input>
+        <Input name="card4" type="text"  ></Input>
+        <Input name="card5" type="text" ></Input>
        </Row>
       <Row>
-        <Input name="cart6" type="text" ></Input>
-        <Input name="cart7" type="text" ></Input>
-        <Input name="cart8" type="text" ></Input>
-        <Input name="cart9" type="text" ></Input>
-        <Input name="cart10" type="text"  ></Input>
+        <Input name="card6" type="text" ></Input>
+        <Input name="card7" type="text" ></Input>
+        <Input name="card8" type="text" ></Input>
+        <Input name="card9" type="text" ></Input>
+        <Input name="card10" type="text"  ></Input>
       </Row>
       <Rotate>
         <h1>Carta de Rotação</h1>
-        <Input name="cart0" type="text"></Input>
+        <Input name="card0" type="text"></Input>
       </Rotate>
       <Data>
         <Button type="submit">{ loading? 'Loading ': 'Adicionar' }  </Button>
